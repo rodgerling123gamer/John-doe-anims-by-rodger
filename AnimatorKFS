@@ -3,6 +3,6 @@ local data = game:HttpGet(url)
 writefile("Animations.rbxm", data)
 
 local animFolder = game:GetObjects(getcustomasset("Animations.rbxm"))[1]
-animFolder.Parent = game:GetService("ReplicatedStorage") -- Guardar em lugar seguro
+animFolder.Parent = game:GetService("ReplicatedStorage") 
 
-return require(animFolder)
+return animFolder
