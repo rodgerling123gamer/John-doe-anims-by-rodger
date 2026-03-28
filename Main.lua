@@ -406,7 +406,7 @@ print("Reanimator Complexo Ativado.")
 --// Variáveis Globais para seu script de animação usar:
 _G.Reanimator_FakeChar = fakeChar
 _G.Reanimator_SetFling = function(state) Flinging = state end
-
+_G.AutoStart = false -- for ui
 -- Para integrar com seu script anterior:
 -- O seu Animator agora deve usar o _G.Reanimator_FakeChar.Humanoid
 --// ================= NOVO ANIMATOR =================
