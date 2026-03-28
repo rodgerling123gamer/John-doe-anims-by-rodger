@@ -691,6 +691,7 @@ end)
 function ChangeKeybind(K)
 	KeyCode = K
 end
+ScriptHub.Start = function()
 pcall(function()
 	if not HasKeySystem and (_G.AutoStart or true) then
 		StartMainUI()
@@ -698,6 +699,7 @@ pcall(function()
 		CreateKeyUIStyled()
 	end
 end)
+end
 -- AbilitySystem - Sistema de Habilidades Autônomo
 -- Não depende de módulos externos
 -- Cria UI do zero sem clonar
