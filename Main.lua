@@ -782,6 +782,7 @@ AbilitySystem.RegisterAbility({
 		        	Anim.Digital:Play()
 		    end
 		})
+AbilitySystem.Initialize()
 UIS.InputBegan:Connect(function(input, gpe)
 	if gpe then return end
 
