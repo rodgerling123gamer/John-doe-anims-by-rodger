@@ -908,8 +908,8 @@ spawn(function()
 end)
 --// ================= TRAIL SYSTEM (10 PARTES) =================
 local basePart = fakeChar:WaitForChild("Goonparr") -- preditor
-local lastpos = basePart.Position
-local trailsize = Vector3.new(2,0.5,3.5)
+local lastpos = basePart.Position - Vector3.new(0, 4.5, 0)
+local trailsize = Vector3.new(2,0.5,4.5)
 local MAX_PARTS = 15
 
 -- criar pool de 10 partes
@@ -919,7 +919,6 @@ for i = 1, MAX_PARTS do
 	part.Size = trailsize
 	part.Anchored = true
 	part.CanCollide = false
-	part.Material = Enum.Material.ForceField
 	part.Color = Color3.fromRGB(20,20,20)
 	part.CFrame = CFrame.new(lastpos)
 	part.Parent = workspace
@@ -931,12 +930,12 @@ local index = 1
 
 spawn(function()
 	while task.wait(0.05) do
-		local actualpos = basePart.Position
-		if (lastpos - actualpos).Magnitude > 2.5 then
+		local actualpos = basePart.Position - Vector3.new(0, 4.5, 0)
+		if (lastpos - actualpos).Magnitude > 2.125 then
 			lastpos = actualpos
 			-- atualizar a próxima parte do trail
 			local part = TrailParts[index]
-			part.CFrame = CFrame.new(actualpos, actualpos + basePart.CFrame.LookVector)
+			part.CFrame = CFrame.new(actualpos, actualpos + basePart.CFrame.LookVector - Vector3.new(0, 4.5, 0))
 
 			-- incrementar índice circular
 			index = index % MAX_PARTS + 1
