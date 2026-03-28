@@ -1,4 +1,4 @@
-faça que isso seja por hats tente fazer que ainda seja longo (600 linhas) e faça o apenas depois de baixar o animations e o setup do animator de keyframes --// ANIMATOR NOVO
+--// ANIMATOR NOVO
 local AnimationModuleThing = loadstring([[local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
@@ -269,7 +269,7 @@ animFolder.Parent = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
-
+local Sounds = {CorruptEnergy = "rbxassetid://136257819515665", Ahh = "rbxassetid://76307607611996", S = "rbxassetid://111895645170572"}
 local lp = Players.LocalPlayer
 local char = lp.Character or lp.CharacterAdded:Wait()
 local realRoot = char:WaitForChild("HumanoidRootPart")
@@ -293,11 +293,11 @@ fakeChar.Parent = workspace
 
 -- Limpeza do FakeChar
 for _, v in pairs(fakeChar:GetDescendants()) do
-    if v:IsA("BasePart") then 
-        v.CanCollide = false
-    elseif v:IsA("LocalScript") or v:IsA("Script") then
-        v:Destroy()
-    end
+	if v:IsA("BasePart") then 
+		v.CanCollide = false
+	elseif v:IsA("LocalScript") or v:IsA("Script") then
+		v:Destroy()
+	end
 end
 
 --// O PULO DO GATO: DESTRUIR JUNTAS SEM MORRER
@@ -312,11 +312,11 @@ fakeChar.Parent = workspace
 
 -- Limpeza do FakeChar
 for _, v in pairs(fakeChar:GetDescendants()) do
-    if v:IsA("BasePart") then 
-        v.CanCollide = false
-    elseif v:IsA("LocalScript") or v:IsA("Script") then
-        v:Destroy()
-    end
+	if v:IsA("BasePart") then 
+		v.CanCollide = false
+	elseif v:IsA("LocalScript") or v:IsA("Script") then
+		v:Destroy()
+	end
 end
 
 --// O PULO DO GATO: DESTRUIR JUNTAS SEM MORRER
@@ -324,41 +324,41 @@ end
 char.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
 
 for _, v in pairs(char:GetDescendants()) do
-    if v:IsA("Motor6D") or v:IsA("Weld") then
-        -- Em vez de apenas .Enabled = false, vamos remover a conexão 
-        -- mas manter o objeto se necessário. Para Reanimators, destruir é mais seguro:
-        v:Destroy() 
-    end
+	if v:IsA("Motor6D") or v:IsA("Weld") then
+		-- Em vez de apenas .Enabled = false, vamos remover a conexão 
+		-- mas manter o objeto se necessário. Para Reanimators, destruir é mais seguro:
+		v:Destroy() 
+	end
 end
 
 --// ALINHAMENTO DAS PARTES (FÍSICA)
 local function Align(Part0, Part1)
-    Part0.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-    Part0.CanCollide = false
-    Part0.Massless = true
-    
-    local att0 = Instance.new("Attachment", Part0)
-    local att1 = Instance.new("Attachment", Part1)
-    
-    local AP = Instance.new("AlignPosition", Part0)
-    AP.Attachment0 = att0
-    AP.Attachment1 = att1
-    AP.RigidityEnabled = true
-    AP.ReactionForceEnabled = false
-    AP.ApplyAtCenterOfMass = true
-    
-    local AO = Instance.new("AlignOrientation", Part0)
-    AO.Attachment0 = att0
-    AO.Attachment1 = att1
-    AO.RigidityEnabled = true
-    AO.ReactionTorqueEnabled = false
+	Part0.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
+	Part0.CanCollide = false
+	Part0.Massless = true
+
+	local att0 = Instance.new("Attachment", Part0)
+	local att1 = Instance.new("Attachment", Part1)
+
+	local AP = Instance.new("AlignPosition", Part0)
+	AP.Attachment0 = att0
+	AP.Attachment1 = att1
+	AP.RigidityEnabled = true
+	AP.ReactionForceEnabled = false
+	AP.ApplyAtCenterOfMass = true
+
+	local AO = Instance.new("AlignOrientation", Part0)
+	AO.Attachment0 = att0
+	AO.Attachment1 = att1
+	AO.RigidityEnabled = true
+	AO.ReactionTorqueEnabled = false
 end
 
 -- Linkando o corpo real ao corpo falso (que será animado)
 for _, part in pairs(fakeChar:GetChildren()) do
-    if part:IsA("BasePart") and char:FindFirstChild(part.Name) then
-        Align(char[part.Name], part)
-    end
+	if part:IsA("BasePart") and char:FindFirstChild(part.Name) then
+		Align(char[part.Name], part)
+	end
 end
 
 fakeChar.Parent = workspace
@@ -367,28 +367,32 @@ workspace.CurrentCamera.CameraSubject = fakeChar:FindFirstChild("Humanoid")
 --// SISTEMA DE ESTABILIDADE DE REDE (ANTI-LAG)
 -- Isso evita que as partes do corpo real sumam ou fiquem paradas no ar para outros players
 local function NetworkFix()
-    for _, v in pairs(char:GetChildren()) do
-        if v:IsA("BasePart") then
-            v.Velocity = VelocityVector
-            v.RotVelocity = Vector3.new(0, 0, 0)
-        end
-    end
+	for _, v in pairs(char:GetChildren()) do
+		if v:IsA("BasePart") then
+			v.Velocity = VelocityVector
+			v.RotVelocity = Vector3.new(0, 0, 0)
+		end
+	end
 end
-
 --// LOOP DE REPLICAÇÃO E FLING
 RunService.Heartbeat:Connect(function()
-    for _, v in pairs(char:GetChildren()) do
-        if v:IsA("BasePart") then
-            -- Força a parte a estar sempre "acordada" para o motor de física
-            v.Velocity = Vector3.new(0, -30.05, 0) 
-            v.RotVelocity = Vector3.new(0, 0, 0)
-        end
-    end
-    
-    -- Verifica se o corpo real se distanciou demais do fake
-    if (realRoot.Position - fakeRoot.Position).Magnitude > 50 then
-        realRoot.CFrame = fakeRoot.CFrame
-    end
+	NetworkFix()
+
+	local realRoot = char:FindFirstChild("HumanoidRootPart")
+	local fakeRoot = fakeChar:FindFirstChild("HumanoidRootPart")
+
+	if realRoot and fakeRoot then
+		if Flinging then
+			-- Modo de Ataque: O Root real gira violentamente e segue o mouse ou frente do fake
+			realRoot.CFrame = fakeRoot.CFrame * CFrame.new(0, 0, -2)
+			realRoot.Velocity = Vector3.new(50000, 50000, 50000)
+			realRoot.RotVelocity = Vector3.new(50000, 50000, 50000)
+		else
+			-- Modo Passivo: O corpo real fica escondido logo abaixo do chão (Evita colisões indesejadas)
+			-- Mas ainda perto o suficiente para o servidor validar sua posição
+			realRoot.CFrame = fakeRoot.CFrame * CFrame.new(0, -10, 0)
+		end
+	end
 end)
 
 --// DESATIVAR MORTE (Opcional, mas recomendado para Reanimators)
@@ -409,22 +413,22 @@ _G.Reanimator_SetFling = function(state) Flinging = state end
 local Animator = AnimationModule.new(fakeChar:WaitForChild("Humanoid"))
 
 local function createTrack(name, looped)
-    local anim = animFolder:FindFirstChild(name)
-    if not anim then return nil end
-    
-    local track = Animator:LoadAnimation(anim)
-    track.Looped = looped or false
-    
-    return track
+	local anim = animFolder:FindFirstChild(name)
+	if not anim then return nil end
+
+	local track = Animator:LoadAnimation(anim)
+	track.Looped = looped or false
+
+	return track
 end
 
 local Anim = {
-    Idle = createTrack("Idle", true),
-    Walk = createTrack("Walk", true),
-    Run  = createTrack("Run", true),
-    Slash = createTrack("Slash", false),
+	Idle = createTrack("Idle", true),
+	Walk = createTrack("Walk", true),
+	Run  = createTrack("Run", true),
+	Slash = createTrack("Slash", false),
 	Digital = createTrack("Digital Footprint", false),
-    Stunned = createTrack("Stunned", false),
+	Stunned = createTrack("Stunned", false),
 	Corrupt = createTrack("Corrupt Energy", false),
 	Kill = createTrack("Kill", false)
 }
@@ -437,110 +441,110 @@ local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
 
 local function CreateHitbox(character, config)
-    config = config or {}
+	config = config or {}
 
-    local root = character:FindFirstChild("HumanoidRootPart")
-    if not root then return end
+	local root = character:FindFirstChild("HumanoidRootPart")
+	if not root then return end
 
-    local params = OverlapParams.new()
-    params.FilterType = Enum.RaycastFilterType.Exclude
-    params.FilterDescendantsInstances = {character}
+	local params = OverlapParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = {character}
 
-    local hitHumanoids = {}
-    local timePassed = 0
-    local duration = config.Time or 0.2
+	local hitHumanoids = {}
+	local timePassed = 0
+	local duration = config.Time or 0.2
 
-    local connection
-    connection = RunService.RenderStepped:Connect(function(dt)
-        timePassed += dt
-        if timePassed >= duration then
-            connection:Disconnect()
-            if config.OnEnd then
-                config.OnEnd()
-            end
-            return
-        end
+	local connection
+	connection = RunService.RenderStepped:Connect(function(dt)
+		timePassed += dt
+		if timePassed >= duration then
+			connection:Disconnect()
+			if config.OnEnd then
+				config.OnEnd()
+			end
+			return
+		end
 
-        -- cria UMA NOVA hitbox por frame
-        local hitbox = Instance.new("Part")
-        hitbox.Size = config.Size or Vector3.new(4,5,4)
-        hitbox.Transparency = config.Debug and 0.65 or 1
-        hitbox.Color = Color3.new(1,0.25,0.25)
-        hitbox.Anchored = true
-        hitbox.CanCollide = false
-        hitbox.CanQuery = true
+		-- cria UMA NOVA hitbox por frame
+		local hitbox = Instance.new("Part")
+		hitbox.Size = config.Size or Vector3.new(4,5,4)
+		hitbox.Transparency = config.Debug and 0.65 or 1
+		hitbox.Color = Color3.new(1,0.25,0.25)
+		hitbox.Anchored = true
+		hitbox.CanCollide = false
+		hitbox.CanQuery = true
 		hitbox.Material = config.Debug and "ForceField" or "Plastic"
-        hitbox.CanTouch = false
-        hitbox.Name = "ClientHitbox"
+		hitbox.CanTouch = false
+		hitbox.Name = "ClientHitbox"
 
-        local cf = config.CFrame or (root.CFrame * (config.Offset or CFrame.new(0,0,-3)))
-        hitbox.CFrame = fakeChar.Goonparr.CFrame * config.Offset--cf + (config.Predict and root.Velocity/12.5 or Vector3.zero)
+		local cf = config.CFrame or (root.CFrame * (config.Offset or CFrame.new(0,0,-3)))
+		hitbox.CFrame = fakeChar.Goonparr.CFrame * config.Offset--cf + (config.Predict and root.Velocity/12.5 or Vector3.zero)
 
-        hitbox.Parent = workspace
+		hitbox.Parent = workspace
 
-        -- debris (igual você pediu)
-        Debris:AddItem(hitbox, 1.5)
+		-- debris (igual você pediu)
+		Debris:AddItem(hitbox, 1.5)
 
-        -- detectar hits
-        local parts = workspace:GetPartsInPart(hitbox, params)
+		-- detectar hits
+		local parts = workspace:GetPartsInPart(hitbox, params)
 
-        for _, part in ipairs(parts) do
-            local hum = part.Parent:FindFirstChildOfClass("Humanoid")
-            if hum and hum.Health > 0 then
-                if not hitHumanoids[hum] then
-                    hitHumanoids[hum] = true
+		for _, part in ipairs(parts) do
+			local hum = part.Parent:FindFirstChildOfClass("Humanoid")
+			if hum and hum.Health > 0 then
+				if not hitHumanoids[hum] then
+					hitHumanoids[hum] = true
 
-                    if config.OnHit then
-					hitbox.Color = Color3.new(0.5, 1, 0.5)
-                        config.OnHit(hum, part)
-                    end
+					if config.OnHit then
+						hitbox.Color = Color3.new(0.5, 1, 0.5)
+						config.OnHit(hum, part)
+					end
 
-                    if not config.HitMultiple then
-                        connection:Disconnect()
-                        return
-                    end
-                end
-            end
-        end
-    end)
+					if not config.HitMultiple then
+						connection:Disconnect()
+						return
+					end
+				end
+			end
+		end
+	end)
 end
 --// LOOP DE FÍSICA
 RunService.Heartbeat:Connect(function()
-    if Flinging then
-        realRoot.Velocity = Vector3.new(0, 5000, 0)
-        realRoot.RotVelocity = Vector3.new(5000, 5000, 5000)
-        realRoot.CFrame = fakeChar.HumanoidRootPart.CFrame * CFrame.new(0, 0, -2)
-    else
-        realRoot.CFrame = fakeChar.HumanoidRootPart.CFrame * CFrame.new(0, -8, 0)
-    end
+	if Flinging then
+		realRoot.Velocity = Vector3.new(0, 5000, 0)
+		realRoot.RotVelocity = Vector3.new(5000, 5000, 5000)
+		realRoot.CFrame = fakeChar.HumanoidRootPart.CFrame * CFrame.new(0, 0, -2)
+	else
+		realRoot.CFrame = fakeChar.HumanoidRootPart.CFrame * CFrame.new(0, -8, 0)
+	end
 end)
 
 --// CONTROLE DE MOVIMENTO
 local sprinting = false
 RunService.RenderStepped:Connect(function()
-    local speed = fakeChar.HumanoidRootPart.Velocity.Magnitude
-    
-    if not State.Attacking then
-        if speed < 2 then
-            if not Anim.Idle._playing then
-                Anim.Idle:Play(0.4)
-            end
-            Anim.Walk:Stop(0.4)
-        else
-		   if not sprinting then
-                if not Anim.Walk._playing then
-                    Anim.Walk:Play(0.4)
+	local speed = fakeChar.HumanoidRootPart.Velocity.Magnitude
+
+	if not State.Attacking then
+		if speed < 2 then
+			if not Anim.Idle._playing then
+				Anim.Idle:Play(0.4)
+			end
+			Anim.Walk:Stop(0.4)
+		else
+			if not sprinting then
+				if not Anim.Walk._playing then
+					Anim.Walk:Play(0.4)
 					Anim.Run:Stop(0.4)
-                end
+				end
 			else
 				if not Anim.Run._playing then
-                    Anim.Run:Play(0.4)
+					Anim.Run:Play(0.4)
 					Anim.Walk:Stop(0.4)
-                end
+				end
 			end
-            Anim.Idle:Stop(0.4)
-        end
-    end
+			Anim.Idle:Stop(0.4)
+		end
+	end
 end)
 local function CreateHitbox2(basePart, config)
 	config = config or {}
@@ -608,8 +612,12 @@ local function CreateHitbox2(basePart, config)
 	end)
 end
 local function corruptenergyability()
+	local sound = Instance.new("Sound", fakeChar.PrimaryPart)
+	sound.SoundId = Sounds.CorruptEnergy
+	sound.PlaybackSpeed = 1.12
+	sound:Play()
 	task.delay(1.8, function()
-	    local spikes = {}
+		local spikes = {}
 		local lastcframe = fakeChar.Goonparr.CFrame
 		local lastDirection = lastcframe.LookVector
 
@@ -651,39 +659,84 @@ local function corruptenergyability()
 		end
 
 		local function createspike(cf)
-			lastcframe = cf
+	lastcframe = cf
 
-			local spike = Instance.new("Part", workspace)
-			spike.CanCollide = false
-			spike.Anchored = true
-			spike.CFrame = cf + Vector3.new(0, -13.6, 0)
-			spike.Size = Vector3.new(3, 13.5, 3)
-			table.insert(spikes, spike)
-			local tween = game.TweenService:Create(
-				spike,
-				TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-				{CFrame = cf}
-			)
-			tween:Play()
-			CreateHitbox2(spike, {
-	Size = Vector3.new(4,14,4),
-	Time = 0.4,
-	Offset = CFrame.new(0, 0, 0),
-	Debug = true,
-	OnHit = function(hum)
-		print("acertou:", hum.Parent.Name)
-	end
-})
+	local spike = Instance.new("Part")
+	spike.Parent = workspace
+	spike.CanCollide = false
+	spike.Anchored = true
+	spike.CFrame = cf + Vector3.new(0, -10.1, 0)
+	spike.Size = Vector3.new(3, 10, 3)
+	spike.Transparency = 1
 
-			task.delay(11.1, function()
-				local tween2 = game.TweenService:Create(
-					spike,
-					TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-					{CFrame = cf + Vector3.new(0, -13.8, 0)}
-				)
-				tween2:Play()
-			end)
+	-- Parte visual separada
+	local visual = Instance.new("Part")
+	visual.Parent = workspace
+	visual.Anchored = true
+	visual.CanCollide = false
+	visual.CFrame = spike.CFrame
+	visual.Size = Vector3.new(4.549, 9.987, 4.297)
+	visual.Color = Color3.fromRGB(17, 17, 17)
+	visual.Material = Enum.Material.Slate
+
+	-- Mesh como detalhe
+	local mesh1 = Instance.new("SpecialMesh")
+mesh1.Parent = visual
+mesh1.MeshId = "rbxassetid://75260737063005"
+mesh1.Scale = Vector3.new(1,1,1)
+
+local mesh2 = Instance.new("SpecialMesh")
+mesh2.Parent = visual
+mesh2.MeshId = "rbxassetid://75260737063005"
+mesh2.Scale = Vector3.new(-1,1,1) -- inverte
+
+	table.insert(spikes, spike)
+
+	-- Tween subida (ambos juntos)
+	local tween = game.TweenService:Create(
+		spike,
+		TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{CFrame = cf}
+	)
+
+	local tweenVisual = game.TweenService:Create(
+		visual,
+		TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{CFrame = cf * CFrame.new(Vector3.new(0, -10/3, 0))}
+	)
+
+	tween:Play()
+	tweenVisual:Play()
+
+	CreateHitbox2(visual, {
+		Size = Vector3.new(4,10.5,4),
+		Time = 0.35,
+		Offset = CFrame.new(0, 0, 0),
+		Debug = true,
+		OnHit = function(hum)
+			print("acertou:", hum.Parent.Name)
 		end
+	})
+
+	task.delay(11.1, function()
+		local downCF = cf + Vector3.new(0, -10.1, 0)
+
+		local tween2 = game.TweenService:Create(
+			spike,
+			TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{CFrame = downCF}
+		)
+
+		local tweenVisual2 = game.TweenService:Create(
+			visual,
+			TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{CFrame = downCF * CFrame.new(Vector3.new(0, -10/2.875, 0))}
+		)
+
+		tween2:Play()
+		tweenVisual2:Play()
+	end)
+end
 
 		spawn(function()
 			for i = 1, 29 do
@@ -705,96 +758,101 @@ local function corruptenergyability()
 end
 --// INPUT
 UIS.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    
-    if input.UserInputType == Enum.UserInputType.MouseButton1 and not State.Attacking then
-        State.Attacking = true
-        Flinging = true
-        
-        Anim.Slash:Play()
-        task.delay(0.3, function(parameters)
+	if gpe then return end
+
+	if input.UserInputType == Enum.UserInputType.MouseButton1 and not State.Attacking then
+		State.Attacking = true
+		Flinging = true
+
+		Anim.Slash:Play()
+		--	local sound = Instance.new("Sound", fakeChar.PrimaryPart)
+		--		sound.SoundId = Sounds.S
+		--	sound:Play()
+		task.delay(0.3, function(parameters)
 			CreateHitbox(fakeChar, {
-    Size = Vector3.new(4.125,6.25,6.75),
-    Offset = CFrame.new(0,0,-1.5),
-    Time = 0.35,
-	Debug = true,
-	Predict = true,
-    HitMultiple = false,
+				Size = Vector3.new(4.125,6.25,6.75),
+				Offset = CFrame.new(0,0,-1.5),
+				Time = 0.35,
+				Debug = true,
+				Predict = true,
+				HitMultiple = false,
 
-    OnHit = function(humanoid)
-        print("ACERTOU:", humanoid.Parent.Name)
+				OnHit = function(humanoid)
+					print("ACERTOU:", humanoid.Parent.Name)
 
-        -- exemplo de dano fake (cliente)
-        humanoid.Health -= 10
-    end
-})
+					-- exemplo de dano fake (cliente)
+					humanoid.Health -= 10
+				end
+			})
 		end)
 
-        task.wait(0.6)
-        
-       -- Anim.Slash:Stop(0.1)
-        Flinging = false
-        State.Attacking = false
-    end
+		task.wait(0.6)
+
+		-- Anim.Slash:Stop(0.1)
+		Flinging = false
+		State.Attacking = false
+	end
 	if input.KeyCode == Enum.KeyCode.Q then
-		 State.Attacking = true
-        --Flinging = true
-        
-        Anim.Corrupt:Play()
-        corruptenergyability()
-        task.wait(0.6)
-        
-       -- Anim.Slash:Stop(0.1)
-       -- Flinging = false
-        State.Attacking = false
+		State.Attacking = true
+		--Flinging = true
+
+		Anim.Corrupt:Play()
+		corruptenergyability()
+		task.wait(0.6)
+
+		-- Anim.Slash:Stop(0.1)
+		-- Flinging = false
+		State.Attacking = false
 	end
 	if input.KeyCode == Enum.KeyCode.E then
-		 State.Attacking = true
-        --Flinging = true
-        
-        Anim.Digital:Play()
-        
-        task.wait(0.6)
-        
-       -- Anim.Slash:Stop(0.1)
-       -- Flinging = false
-        State.Attacking = false
+		State.Attacking = true
+		--Flinging = true
+
+		Anim.Digital:Play()
+
+		task.wait(0.6)
+
+		-- Anim.Slash:Stop(0.1)
+		-- Flinging = false
+		State.Attacking = false
 	end
 	if input.KeyCode == Enum.KeyCode.R then
-		 State.Attacking = true
-        --Flinging = true
-        
-        Anim.Stunned:Play()
-        
-        task.wait(0.6)
-        
-       -- Anim.Slash:Stop(0.1)
-       -- Flinging = false
-        State.Attacking = false
+		State.Attacking = true
+		--Flinging = true
+
+		Anim.Stunned:Play()
+
+		task.wait(0.6)
+
+		-- Anim.Slash:Stop(0.1)
+		-- Flinging = false
+		State.Attacking = false
 	end
 	if input.KeyCode == Enum.KeyCode.T then
-		 State.Attacking = true
-        --Flinging = true
-        
-        Anim.Kill:Play()
-        
-        task.wait(0.6)
-        
-       -- Anim.Slash:Stop(0.1)
-       -- Flinging = false
-        State.Attacking = false
+		State.Attacking = true
+		--Flinging = true
+		local sound = Instance.new("Sound", fakeChar.PrimaryPart)
+		sound.SoundId = Sounds.Ahh
+		sound:Play()
+		Anim.Kill:Play()
+
+		task.wait(0.6)
+
+		-- Anim.Slash:Stop(0.1)
+		-- Flinging = false
+		State.Attacking = false
 	end
 	if input.KeyCode == Enum.KeyCode.LeftShift then
-     	sprinting = true
+		sprinting = true
 		fakeChar.Humanoid.WalkSpeed = 28.5
 	end
 end)
 UIS.InputEnded:Connect(function(input, gpe)
-    if gpe then return end
-    
+	if gpe then return end
+
 	if input.KeyCode == Enum.KeyCode.LeftShift then
 
-	    sprinting = false
+		sprinting = false
 		fakeChar.Humanoid.WalkSpeed = 12
 	end
 end	)
