@@ -3,7 +3,7 @@ local Size = UDim2.new(1, -20,1, -20)
 local BooleanTable = {}
 ScriptHub.Bools = BooleanTable
 
-local Gui = Instance.new("ScreenGui", game:GetService('CoreGui') or game:GetService("StarterGui"))
+local Gui = (game:GetService('CoreGui') or game:GetService("StarterGui")):FindFirstChild("ScreenGui") or Instance.new("ScreenGui", game:GetService('CoreGui') or game:GetService("StarterGui"))
 local Contents1
 local Sounds = {
 	click = "rbxassetid://9125655866",
