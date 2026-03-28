@@ -905,92 +905,44 @@ spawn(function()
 			end
 		end)
 	end
-end)--// ================= TRAIL SYSTEM (10 PARTES) =================
-
-local TrailSystem = {}
-TrailSystem.Enabled = true
-
-local TrailParts = {}
+end)
+--// ================= TRAIL SYSTEM (10 PARTES) =================
+local basePart = fakeChar:WaitForChild("Goonparr") -- preditor
+local lastpos = basePart.Position
+local trailsize = Vector3.new(2,0.5,3.5)
 local MAX_PARTS = 10
 
-local basePart = fakeChar:WaitForChild("Goonparr") -- usa seu preditor
-
--- config visual
-local TRAIL_LIFETIME = 0.35
-local TRAIL_COLOR = Color3.fromRGB(20, 20, 20)
-local TRAIL_MATERIAL = Enum.Material.ForceField
-
--- criar pool (10 partes)
+-- criar pool de 10 partes
+local TrailParts = {}
 for i = 1, MAX_PARTS do
 	local part = Instance.new("Part")
+	part.Size = trailsize
 	part.Anchored = true
 	part.CanCollide = false
-	part.Transparency = 1
-	part.Size = Vector3.new(2,2,2)
-	part.Material = TRAIL_MATERIAL
-	part.Color = TRAIL_COLOR
-	part.Name = "TrailPart_"..i
+	part.Material = Enum.Material.ForceField
+	part.Color = Color3.fromRGB(20,20,20)
+	part.CFrame = CFrame.new(lastpos)
 	part.Parent = workspace
 
-	TrailParts[i] = {
-		Part = part,
-		LastCF = CFrame.new(),
-		Active = false
-	}
+	TrailParts[i] = part
 end
 
 local index = 1
 
--- spawn de trail
-local function spawnTrail(cf)
-	local data = TrailParts[index]
-	index = index % MAX_PARTS + 1
+spawn(function()
+	while task.wait(0.05) do
+		local actualpos = basePart.Position
+		if (lastpos - actualpos).Magnitude > 3.5 then
+			lastpos = actualpos
+			-- atualizar a próxima parte do trail
+			local part = TrailParts[index]
+			part.CFrame = CFrame.new(actualpos, actualpos + basePart.CFrame.LookVector)
 
-	local part = data.Part
-	data.Active = true
-
-	part.CFrame = cf
-	part.Transparency = 0.25
-	part.Size = Vector3.new(2.5,2.5,2.5)
-
-	-- fade out suave
-	task.spawn(function()
-		local t = 0
-		while t < TRAIL_LIFETIME do
-			t += task.wait()
-			part.Transparency = 0.25 + (t / TRAIL_LIFETIME)
+			-- incrementar índice circular
+			index = index % MAX_PARTS + 1
 		end
-		part.Transparency = 1
-		data.Active = false
-	end)
-end
-
--- loop principal
-RunService.RenderStepped:Connect(function()
-	if not TrailSystem.Enabled then return end
-	if not basePart then return end
-
-	spawnTrail(basePart.CFrame)
+	end
 end)
-
--- API
-function TrailSystem:SetEnabled(state)
-	self.Enabled = state
-end
-
-function TrailSystem:SetColor(color)
-	for _, v in pairs(TrailParts) do
-		v.Part.Color = color
-	end
-end
-
-function TrailSystem:SetMaterial(mat)
-	for _, v in pairs(TrailParts) do
-		v.Part.Material = mat
-	end
-end
-
-_G.TrailSystem = TrailSystem
 --// NETWORK
 lp.Character = fakeChar
 char.Humanoid:Destroy()
