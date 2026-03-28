@@ -1117,14 +1117,10 @@ function AbilitySystem.Initialize(parentGui)
 
 	isInitialized = true
 
-	-- Cria o container (se necessário)
-	-- container = createAbilityContainer(parentGui)
-
 	local container = Gui:FindFirstChild("AbilityContainer")
 	if not container then
-		container = Instance.new("Frame")
-		container.Name = "AbilityContainer"
-		container.Parent = parentGui
+		container = createAbilityContainer(parentGui)
+        container.Parent = game:GetService("CoreGui").ScreenGui
 	end
 
 	-- Cria as UIs para cada habilidade registrada
