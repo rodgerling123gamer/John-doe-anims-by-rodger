@@ -846,7 +846,7 @@ UIS.InputBegan:Connect(function(input, gpe)
 	if input.KeyCode == Enum.KeyCode.LeftShift then
 		sprinting = true
 		fakeChar.Humanoid.WalkSpeed = 28.5
-	elseif input.KeyCode == Enum.KeyCode.T then
+	elseif input.KeyCode == Enum.KeyCode.Y then -- bro i forgot about the kill anim
 		Anim.Intro:Play()
 	end
 end)
@@ -857,7 +857,7 @@ UIS.InputEnded:Connect(function(input, gpe)
 
 		sprinting = false
 		fakeChar.Humanoid.WalkSpeed = 12
-	elseif input.KeyCode == Enum.KeyCode.T then
+	elseif input.KeyCode == Enum.KeyCode.Y then
 		Anim.Intro:Stop()
 	end
 end	)
