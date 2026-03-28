@@ -778,7 +778,7 @@ AbilitySystem.RegisterAbility({
 			Icon = "rbxassetid://96590285148227",
 			Cooldown = 5,
 			Keybind = "E",
-			LayoutOrder = 1,
+			LayoutOrder = 2,
 			Callback = function(ability) 
 		        	Anim.Digital:Play()
 		    end
@@ -910,7 +910,7 @@ end)
 local basePart = fakeChar:WaitForChild("Goonparr") -- preditor
 local lastpos = basePart.Position
 local trailsize = Vector3.new(2,0.5,3.5)
-local MAX_PARTS = 10
+local MAX_PARTS = 15
 
 -- criar pool de 10 partes
 local TrailParts = {}
@@ -932,7 +932,7 @@ local index = 1
 spawn(function()
 	while task.wait(0.05) do
 		local actualpos = basePart.Position
-		if (lastpos - actualpos).Magnitude > 3.5 then
+		if (lastpos - actualpos).Magnitude > 2.5 then
 			lastpos = actualpos
 			-- atualizar a próxima parte do trail
 			local part = TrailParts[index]
