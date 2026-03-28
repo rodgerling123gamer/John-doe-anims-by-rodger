@@ -758,6 +758,30 @@ end
 	end)
 end
 --// INPUT
+local module = loadstring(game:HttpGet("https://raw.githubusercontent.com/rodgerling123gamer/John-doe-anims-by-rodger/refs/heads/main/AnimatorKFS"))()
+local AbilitySystem = module.AbilitySystem
+AbilitySystem.RegisterAbility({
+			Name = "Corrupt Energy",
+			Icon = "rbxassetid://96590285148227",
+			Cooldown = 5,
+			Keybind = "Q",
+			LayoutOrder = 1,
+			Callback = function(ability) 
+		        	Anim.Corrupt:Play()
+		          corruptenergyability()
+		    end
+		})
+--	Anim.Digital:Play()
+AbilitySystem.RegisterAbility({
+			Name = "Digital footprint",
+			Icon = "rbxassetid://96590285148227",
+			Cooldown = 5,
+			Keybind = "E",
+			LayoutOrder = 1,
+			Callback = function(ability) 
+		        	Anim.Digital:Play()
+		    end
+		})
 UIS.InputBegan:Connect(function(input, gpe)
 	if gpe then return end
 
@@ -791,30 +815,6 @@ UIS.InputBegan:Connect(function(input, gpe)
 
 		-- Anim.Slash:Stop(0.1)
 		Flinging = false
-		State.Attacking = false
-	end
-	if input.KeyCode == Enum.KeyCode.Q then
-		State.Attacking = true
-		--Flinging = true
-
-		Anim.Corrupt:Play()
-		corruptenergyability()
-		task.wait(0.6)
-
-		-- Anim.Slash:Stop(0.1)
-		-- Flinging = false
-		State.Attacking = false
-	end
-	if input.KeyCode == Enum.KeyCode.E then
-		State.Attacking = true
-		--Flinging = true
-
-		Anim.Digital:Play()
-
-		task.wait(0.6)
-
-		-- Anim.Slash:Stop(0.1)
-		-- Flinging = false
 		State.Attacking = false
 	end
 	if input.KeyCode == Enum.KeyCode.R then
@@ -903,7 +903,92 @@ spawn(function()
 			end
 		end)
 	end
+end)--// ================= TRAIL SYSTEM (10 PARTES) =================
+
+local TrailSystem = {}
+TrailSystem.Enabled = true
+
+local TrailParts = {}
+local MAX_PARTS = 10
+
+local basePart = fakeChar:WaitForChild("Goonparr") -- usa seu preditor
+
+-- config visual
+local TRAIL_LIFETIME = 0.35
+local TRAIL_COLOR = Color3.fromRGB(20, 20, 20)
+local TRAIL_MATERIAL = Enum.Material.ForceField
+
+-- criar pool (10 partes)
+for i = 1, MAX_PARTS do
+	local part = Instance.new("Part")
+	part.Anchored = true
+	part.CanCollide = false
+	part.Transparency = 1
+	part.Size = Vector3.new(2,2,2)
+	part.Material = TRAIL_MATERIAL
+	part.Color = TRAIL_COLOR
+	part.Name = "TrailPart_"..i
+	part.Parent = workspace
+
+	TrailParts[i] = {
+		Part = part,
+		LastCF = CFrame.new(),
+		Active = false
+	}
+end
+
+local index = 1
+
+-- spawn de trail
+local function spawnTrail(cf)
+	local data = TrailParts[index]
+	index = index % MAX_PARTS + 1
+
+	local part = data.Part
+	data.Active = true
+
+	part.CFrame = cf
+	part.Transparency = 0.25
+	part.Size = Vector3.new(2.5,2.5,2.5)
+
+	-- fade out suave
+	task.spawn(function()
+		local t = 0
+		while t < TRAIL_LIFETIME do
+			t += task.wait()
+			part.Transparency = 0.25 + (t / TRAIL_LIFETIME)
+		end
+		part.Transparency = 1
+		data.Active = false
+	end)
+end
+
+-- loop principal
+RunService.RenderStepped:Connect(function()
+	if not TrailSystem.Enabled then return end
+	if not basePart then return end
+
+	spawnTrail(basePart.CFrame)
 end)
+
+-- API
+function TrailSystem:SetEnabled(state)
+	self.Enabled = state
+end
+
+function TrailSystem:SetColor(color)
+	for _, v in pairs(TrailParts) do
+		v.Part.Color = color
+	end
+end
+
+function TrailSystem:SetMaterial(mat)
+	for _, v in pairs(TrailParts) do
+		v.Part.Material = mat
+	end
+end
+
+_G.TrailSystem = TrailSystem
 --// NETWORK
 lp.Character = fakeChar
 char.Humanoid:Destroy()
