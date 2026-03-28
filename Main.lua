@@ -1,3 +1,7 @@
+-- THIS SCRIPT ONLY WORKS ON BACKDOORED/SERVERSIDE/FE games
+-- THIS SCRIPT ONLY WORKS ON BACKDOORED/SERVERSIDE/FE games
+-- THIS SCRIPT ONLY WORKS ON BACKDOORED/SERVERSIDE/FE games
+
 --// ANIMATOR NOVO
 local AnimationModuleThing = loadstring([[local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -935,8 +939,8 @@ spawn(function()
 			lastpos = actualpos
 			-- atualizar a próxima parte do trail
 			local part = TrailParts[index]
-			part.CFrame = CFrame.new(actualpos, actualpos + basePart.CFrame.LookVector - Vector3.new(0, 4.5, 0))
-
+			part.CFrame = CFrame.new(actualpos, actualpos + basePart.CFrame.LookVector)
+			part.Orientation = basePart.Orientation 
 			-- incrementar índice circular
 			index = index % MAX_PARTS + 1
 		end
