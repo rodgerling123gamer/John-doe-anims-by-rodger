@@ -531,6 +531,7 @@ RunService.RenderStepped:Connect(function()
 				Anim.Idle:Play(0.4)
 			end
 			Anim.Walk:Stop(0.4)
+			Anim.Run:Stop(0.4)
 		else
 			if not sprinting then
 				if not Anim.Walk._playing then
@@ -782,7 +783,7 @@ AbilitySystem.RegisterAbility({
 		        	Anim.Digital:Play()
 		    end
 		})
-AbilitySystem.Initialize()
+AbilitySystem.Initialize(game:GetService("CoreGui"))
 UIS.InputBegan:Connect(function(input, gpe)
 	if gpe then return end
 
