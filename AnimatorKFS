@@ -1131,6 +1131,7 @@ function AbilitySystem.Initialize(parentGui)
 	for abilityName, abilityData in pairs(abilities) do
 		local abilityIcon = createAbilityIcon(abilityData)
 		abilityIcon.Parent = container
+        print(abilityIcon.Parent.Name)
 		abilityUIs[abilityName] = abilityIcon
 
 		-- Conecta o clique
