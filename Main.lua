@@ -226,7 +226,7 @@ end
 return Animator]])()
 local AnimationModule = AnimationModuleThing
 --// DOWNLOAD DOS ASSETS
-local url = "https://raw.githubusercontent.com/rodgerling123gamer/John-doe-anims-by-rodger/main/Animations.rbxm"
+local url = "https://raw.githubusercontent.com/rodgerling123gamer/John-doe-anims-by-rodger/main/Animationsnew.rbxm"
 local data = game:HttpGet(url)
 writefile("Animations.rbxm", data)
 local character =  game.Players.LocalPlayer.Character
@@ -430,7 +430,8 @@ local Anim = {
 	Digital = createTrack("Digital Footprint", false),
 	Stunned = createTrack("Stunned", false),
 	Corrupt = createTrack("Corrupt Energy", false),
-	Kill = createTrack("Kill", false)
+	Kill = createTrack("Kill", false),
+	Intro = createTrack("GoonBreak", false) -- dont ask me the name
 }
 
 --// ================= ESTADOS =================
