@@ -934,8 +934,8 @@ local index = 1
 
 spawn(function()
 	while task.wait(0.05) do
-		local actualpos = basePart.Position - Vector3.new(0, 4.5, 0)
-		if (lastpos - actualpos).Magnitude > 2.125 then
+		local actualpos = basePart.Position - Vector3.new(0, 3.65, 0)
+		if (lastpos - actualpos).Magnitude > 2 then
 			lastpos = actualpos
 			-- atualizar a próxima parte do trail
 			local part = TrailParts[index]
